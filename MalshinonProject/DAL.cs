@@ -14,7 +14,7 @@ internal class Dal
     internal bool chack_code_agent()
     {
         Agent s = new Agent();
-        string code = s.check_agent();
+        string code = s.enter_password();
         bool my_bool = false;
         try
         {
@@ -39,5 +39,36 @@ internal class Dal
             conn.Close();
         }
         return my_bool;
+    }
+//--------------------------------------------------------
+
+    internal void create_agent()
+    {
+        Console.WriteLine("plise enter your name ");
+        // צריך לבדוק את הקלט
+        string fullName = Console.ReadLine();
+        Console.WriteLine("plise enter new password ");
+        string password = Console.ReadLine();
+
+        try
+        {
+            conn.Open();
+            string query = $"INSERT INTO reporter(`reporterName`,`secretCode`)VALUES(@fullName, @password);";
+            MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@fullName", fullName);
+            cmd.Parameters.AddWithValue("@password", password);
+            cmd.ExecuteNonQuery();
+
+            Console.WriteLine("added user");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"err: {ex}");
+        }
+        finally
+        {
+            conn.Close();
+        }
+       
     }
 }
