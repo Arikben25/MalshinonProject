@@ -11,6 +11,7 @@ internal class Dal
         conn = new MySqlConnection(connStr);
     }
 
+    // הפונקציה מחזירה ערך בוליאני האם המשתמש קיים כבר או לא
     internal bool chack_code_agent()
     {
         Agent s = new Agent();
@@ -71,4 +72,7 @@ internal class Dal
         }
        
     }
+//--------------------------------------------------------
+
+    
 }

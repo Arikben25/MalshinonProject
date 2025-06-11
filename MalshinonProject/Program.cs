@@ -10,6 +10,12 @@ namespace MalshinonProject
     {
         static void Main(string[] args)
         {
+            string word = "a*";
+            string[] s = word.Split('*');
+            if (s[1] == "")
+            { Console.WriteLine("is str"); }
+            //Dal s = new Dal();
+            //s.chack_code_agent();
         }
     }
 }

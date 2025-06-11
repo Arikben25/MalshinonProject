@@ -25,10 +25,12 @@ internal class Agent
 
     }
 
-    internal void create_user()
+    internal static void create_user()
     {
         Dal user = new Dal();
         user.create_agent();
     }
+
+    internal  void type_agent() { }
 
 }
