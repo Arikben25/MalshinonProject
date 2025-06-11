@@ -10,6 +10,10 @@ internal class Reports
         string rep = enter_reports();
         string[] massege_splited = Split_the_message(rep);
         string[] message_correct = Checks_message_content(massege_splited);
+        Dal dal = new Dal();
+        bool name_terorrist = dal.check_name_terorrist(message_correct);
+        if (!name_terorrist) { dal.create_new_terorrist(message_correct[0]);}
+        else { }// הכנסת הודעה לטבלה
     }
     internal string enter_reports()
     {
@@ -45,21 +49,5 @@ internal class Reports
         }
         return massage;
     }
-
-
-
-
-
-
-
-
-
-
-    internal void check_terorrist() { }
-
-    internal void create_new_terorrist() { }
-
-
-
     
 }
