@@ -169,7 +169,7 @@ internal class Dal
 
     // פונקציה שמעלה ערך 1 בטרוריסט
 
-    internal void Update_message_count(string terorrist_name)
+    internal static void Update_message_count(string terorrist_name)
     {
         try
         {
@@ -193,7 +193,7 @@ internal class Dal
     }
 
     //פונקציה שמעלה ערך אחד בסוכן 
-    internal void Update_report_count(string agent_name)
+    internal static void Update_report_count(string agent_name)
     {
         try
         {
@@ -208,6 +208,114 @@ internal class Dal
         catch (Exception ex)
         {
             Console.WriteLine($"err: {ex.Message}");
+        }
+        finally
+        {
+            conn.Close();
+        }
+    }
+
+    // פונקציה שמחשבנת האם סוכן הוא פוטנציאלי
+
+    internal void potential_agent()
+    {
+        try
+        {
+            conn.Open();
+
+            string updateQuery = @"
+            UPDATE reporters r
+            JOIN (
+                SELECT reporterName, AVG(textLength) AS avgLength
+                FROM intelligence
+                GROUP BY reporterName
+                HAVING avgLength > 100
+            ) i ON r.reporterName = i.reporterName
+            SET r.type = 'potential_agent'
+            WHERE r.num_reports >= 10;
+        ";
+
+            using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, conn))
+            {
+                int updated = updateCmd.ExecuteNonQuery();
+                Console.WriteLine($"✔ Updated {updated} reporter(s) to 'potential_agent'.");
+            }
+
+            string selectQuery = @"
+            SELECT r.reporterName, r.num_reports, AVG(i.textLength) AS avgLength, r.type
+            FROM reporters r
+            JOIN intelligence i ON r.reporterName = i.reporterName
+            GROUP BY r.reporterName, r.num_reports, r.type
+            HAVING r.num_reports >= 10 AND AVG(i.textLength) > 100;
+        ";
+
+            using (MySqlCommand selectCmd = new MySqlCommand(selectQuery, conn))
+            using (MySqlDataReader reader = selectCmd.ExecuteReader())
+            {
+
+                while (reader.Read())
+                {
+                    string name = reader.GetString("reporterName");
+                    int numReports = reader.GetInt32("num_reports");
+                    double avgLength = reader.GetDouble("avgLength");
+                    string type = reader.GetString("type");
+
+                    Console.WriteLine($"- Name: {name}, Reports: {numReports}, Avg Length: {avgLength:F2}, Type: {type}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($" Error: {ex.Message}");
+        }
+        finally
+        {
+            conn.Close();
+        }
+    }
+
+
+    // פונקציה שבודקת רמת מסוכנות טרוריסט
+    internal void potential_terorrist()
+    {
+        try
+        {
+            conn.Open();
+            string updateQuery = @"
+            UPDATE terrorists
+            SET typeTrorrist = 'dangerous'
+            WHERE num_mentions > 10;
+        ";
+
+            using (MySqlCommand updateCmd = new MySqlCommand(updateQuery, conn))
+            {
+                int updated = updateCmd.ExecuteNonQuery();
+            }
+
+            string selectQuery = @"
+            SELECT terorristName, num_mentions, typeTrorrist
+            FROM terrorists
+            WHERE typeTrorrist = 'dangerous'
+            ORDER BY terorristName;
+        ";
+
+            using (MySqlCommand selectCmd = new MySqlCommand(selectQuery, conn))
+            using (MySqlDataReader reader = selectCmd.ExecuteReader())
+            {
+
+                while (reader.Read())
+                {
+                    string name = reader.GetString("terorristName");
+                    int mentions = reader.GetInt32("num_mentions");
+                    string type = reader.GetString("typeTrorrist");
+
+                    Console.WriteLine($"- Name: {name}, Mentions: {mentions}, Type: {type}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Err: {ex.Message}");
         }
         finally
         {
