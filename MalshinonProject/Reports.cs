@@ -13,7 +13,10 @@ internal class Reports
         Dal dal = new Dal();
         bool name_terorrist = dal.check_name_terorrist(message_correct);
         if (!name_terorrist) { dal.create_new_terorrist(message_correct[0]);}
-        else { }// הכנסת הודעה לטבלה
+
+        length_massege(message_correct[1]);
+
+       // enter_report_to_table();
     }
     internal string enter_reports()
     {
@@ -49,5 +52,19 @@ internal class Reports
         }
         return massage;
     }
+    
+
+
+
+
+
+    internal int length_massege(string massege)
+    {
+        int lenght = massege.Length;
+        Console.WriteLine(lenght);
+        return lenght;
+    }
+
+
     
 }

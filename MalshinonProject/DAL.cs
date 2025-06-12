@@ -20,7 +20,7 @@ internal class Dal
         try
         {
             conn.Open();
-            string query = "SELECT `secretCode` FROM `reporter`;";
+            string query = "SELECT `secretCode` FROM `reporters`;";
             MySqlCommand cmd = new MySqlCommand(query, conn);
 
             var reader = cmd.ExecuteReader();
@@ -54,7 +54,7 @@ internal class Dal
         try
         {
             conn.Open();
-            string query = $"INSERT INTO reporter(`reporterName`,`secretCode`)VALUES(@fullName, @password);";
+            string query = $"INSERT INTO reporters(`reporterName`,`secretCode`)VALUES(@fullName, @password);";
             MySqlCommand cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@fullName", fullName);
             cmd.Parameters.AddWithValue("@password", password);
@@ -84,7 +84,7 @@ internal class Dal
         try
         {
             conn.Open();
-            string query = "SELECT `terorristName` FROM `terorrist`;";
+            string query = "SELECT `terorristName` FROM `terorrists`;";
             MySqlCommand cmd = new MySqlCommand(query, conn);
 
             var reader = cmd.ExecuteReader();
@@ -115,7 +115,7 @@ internal class Dal
         {
             
             conn.Open();
-            string query = $"INSERT INTO terorrist(`terorristName`)VALUES(@name);";
+            string query = $"INSERT INTO terorrists(`terorristName`)VALUES(@name);";
             MySqlCommand cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@name", name);
             cmd.ExecuteNonQuery();
