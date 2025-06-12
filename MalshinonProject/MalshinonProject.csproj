@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="agent.cs" />
     <Compile Include="DAL.cs" />
+    <Compile Include="manu.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reports.cs" />

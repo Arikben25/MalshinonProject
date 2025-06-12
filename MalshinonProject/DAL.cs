@@ -169,7 +169,7 @@ internal class Dal
 
     // פונקציה שמעלה ערך 1 בטרוריסט
 
-    internal static void Update_message_count(string terorrist_name)
+    internal void Update_message_count(string terorrist_name)
     {
         try
         {
@@ -193,7 +193,7 @@ internal class Dal
     }
 
     //פונקציה שמעלה ערך אחד בסוכן 
-    internal static void Update_report_count(string agent_name)
+    internal void Update_report_count(string agent_name)
     {
         try
         {

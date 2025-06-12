@@ -10,7 +10,8 @@ namespace MalshinonProject
     {
         static void Main(string[] args)
         {
-           
+            Menu m = new Menu();
+            m.print_menu();
         }
     }
 }
