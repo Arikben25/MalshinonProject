@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml.Linq;
 using MySql.Data.MySqlClient;
 
 internal class Dal
@@ -141,19 +142,72 @@ internal class Dal
         try
         {
             conn.Open();
-            string query = @"INSERT INTO intelligence(`reportText`,`textLength`,`reporterName`,`terroristName`) VALUES(@reportText,@textLength,@reporterName,@terroristName);\r\n";
+            string query = @"INSERT INTO intelligence(`reportText`,`textLength`,`reporterName`,`terroristName`) VALUES(@reportText,@textLength,@reporterName,@terroristName);";
             MySqlCommand cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@reportText", reportText);
             cmd.Parameters.AddWithValue("@textLength", length);
             cmd.Parameters.AddWithValue("@reporterName", reporterName);
             cmd.Parameters.AddWithValue("@terroristName", terroristName);
             cmd.ExecuteNonQuery();
+            // עדכון שתי הטבלאות האחרות
+            Update_message_count(terroristName);
+            Update_report_count(reporterName);
 
-            Console.WriteLine("added user");
+
+            Console.WriteLine("The intelligence table has been updated.");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"err: {ex}");
+        }
+        finally
+        {
+            conn.Close();
+        }
+    }
+    //--------------------------------------------------------------------------------------------------
+
+    // פונקציה שמעלה ערך 1 בטרוריסט
+
+    internal void Update_message_count(string terorrist_name)
+    {
+        try
+        {
+
+            conn.Open();
+            string query = $"UPDATE terrorists SET num_mentions = IFNULL(num_mentions, 0) + 1 WHERE terroristName = @terroristName;";
+            MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@terroristName", terorrist_name);
+            cmd.ExecuteNonQuery();
+
+            Console.WriteLine("add 1 of terorrist");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"err: {ex}");
+        }
+        finally
+        {
+            conn.Close();
+        }
+    }
+
+    //פונקציה שמעלה ערך אחד בסוכן 
+    internal void Update_report_count(string agent_name)
+    {
+        try
+        {
+            conn.Open();
+            string query = "UPDATE reporters SET num_reports = IFNULL(num_reports, 0) + 1 WHERE reporterName = @reporterName;";
+            MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@reporterName", agent_name);
+            cmd.ExecuteNonQuery();
+
+            Console.WriteLine("add 1 to reporter");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"err: {ex.Message}");
         }
         finally
         {
