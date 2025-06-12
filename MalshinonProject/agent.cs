@@ -57,7 +57,12 @@ internal class Agent
         Dal type_agent = new Dal();
         type_agent.potential_agent();
     }
-        
+       
+    // פונקציה שמדפיסה רשימת טרוריסטים מסוכנים
 
-
+    internal void print_potential_terorrist()
+    {
+        Dal terorrist = new Dal();
+        terorrist.potential_terorrist();
+    }
 }
