@@ -10,10 +10,7 @@ namespace MalshinonProject
     {
         static void Main(string[] args)
         {
-
-            Dal s = new Dal();
            
-            s.create_new_terorrist("aaa");
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml.Linq;
 using MySql.Data.MySqlClient;
 
 internal class Dal
@@ -15,19 +16,22 @@ internal class Dal
     internal bool chack_code_agent()
     {
         Agent s = new Agent();
-        string code = s.enter_password();
+        string[] name_code = s.enter_password_and_name();
+        string name = name_code[0];
+        string code = name_code[1];
         bool my_bool = false;
         try
         {
             conn.Open();
-            string query = "SELECT `secretCode` FROM `reporter`;";
+            string query = "SELECT `secretCode`,`reporterName` FROM `reporters`;";
             MySqlCommand cmd = new MySqlCommand(query, conn);
 
             var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
                 string secretCode = reader.GetString("secretCode");
-                if (secretCode == code) { my_bool = true; }
+                string reporterName = reader.GetString("reporterName");
+                if (secretCode == code && reporterName == name ) { my_bool = true; }
 
             }
         }
@@ -43,18 +47,14 @@ internal class Dal
     }
     //--------------------------------------------------------
     // הפונקציה יוצרת משתמש חדש
-    internal void create_agent()
+    internal void create_agent(string fullName, string password)
     {
-        Console.WriteLine("plise enter your name ");
-        // צריך לבדוק את הקלט
-        string fullName = Console.ReadLine();
-        Console.WriteLine("plise enter new password ");
-        string password = Console.ReadLine();
+        
 
         try
         {
             conn.Open();
-            string query = $"INSERT INTO reporter(`reporterName`,`secretCode`)VALUES(@fullName, @password);";
+            string query = $"INSERT INTO reporters(`reporterName`,`secretCode`)VALUES(@fullName, @password);";
             MySqlCommand cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@fullName", fullName);
             cmd.Parameters.AddWithValue("@password", password);
@@ -84,7 +84,7 @@ internal class Dal
         try
         {
             conn.Open();
-            string query = "SELECT `terorristName` FROM `terorrist`;";
+            string query = "SELECT `terorristName` FROM `terorrists`;";
             MySqlCommand cmd = new MySqlCommand(query, conn);
 
             var reader = cmd.ExecuteReader();
@@ -115,7 +115,7 @@ internal class Dal
         {
             
             conn.Open();
-            string query = $"INSERT INTO terorrist(`terorristName`)VALUES(@name);";
+            string query = $"INSERT INTO terorrists(`terorristName`)VALUES(@name);";
             MySqlCommand cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@name", name);
             cmd.ExecuteNonQuery();
@@ -132,9 +132,88 @@ internal class Dal
         }
     }
 
-// ---------------------------------------------------------------------
-    
+    // ---------------------------------------------------------------------
 
+    // פונקציה המכניסה הודעה לטבלה ומעדכנת את שאר הטבלאות
+
+    internal void enter_report_to_table(string reportText, int length,string reporterName, string terroristName)
+    {
+
+        try
+        {
+            conn.Open();
+            string query = @"INSERT INTO intelligence(`reportText`,`textLength`,`reporterName`,`terroristName`) VALUES(@reportText,@textLength,@reporterName,@terroristName);";
+            MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@reportText", reportText);
+            cmd.Parameters.AddWithValue("@textLength", length);
+            cmd.Parameters.AddWithValue("@reporterName", reporterName);
+            cmd.Parameters.AddWithValue("@terroristName", terroristName);
+            cmd.ExecuteNonQuery();
+            // עדכון שתי הטבלאות האחרות
+            Update_message_count(terroristName);
+            Update_report_count(reporterName);
+
+
+            Console.WriteLine("The intelligence table has been updated.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"err: {ex}");
+        }
+        finally
+        {
+            conn.Close();
+        }
+    }
+    //--------------------------------------------------------------------------------------------------
+
+    // פונקציה שמעלה ערך 1 בטרוריסט
+
+    internal void Update_message_count(string terorrist_name)
+    {
+        try
+        {
+
+            conn.Open();
+            string query = $"UPDATE terrorists SET num_mentions = IFNULL(num_mentions, 0) + 1 WHERE terroristName = @terroristName;";
+            MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@terroristName", terorrist_name);
+            cmd.ExecuteNonQuery();
+
+            Console.WriteLine("add 1 of terorrist");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"err: {ex}");
+        }
+        finally
+        {
+            conn.Close();
+        }
+    }
+
+    //פונקציה שמעלה ערך אחד בסוכן 
+    internal void Update_report_count(string agent_name)
+    {
+        try
+        {
+            conn.Open();
+            string query = "UPDATE reporters SET num_reports = IFNULL(num_reports, 0) + 1 WHERE reporterName = @reporterName;";
+            MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@reporterName", agent_name);
+            cmd.ExecuteNonQuery();
+
+            Console.WriteLine("add 1 to reporter");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"err: {ex.Message}");
+        }
+        finally
+        {
+            conn.Close();
+        }
+    }
 
 
 }
