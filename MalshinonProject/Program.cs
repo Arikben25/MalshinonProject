@@ -10,8 +10,7 @@ namespace MalshinonProject
     {
         static void Main(string[] args)
         {
-            Reports r = new Reports();
-            r.length_massege("aa");
+           
         }
     }
 }

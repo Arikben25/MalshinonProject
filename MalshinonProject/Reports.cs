@@ -14,9 +14,12 @@ internal class Reports
         bool name_terorrist = dal.check_name_terorrist(message_correct);
         if (!name_terorrist) { dal.create_new_terorrist(message_correct[0]);}
 
-        length_massege(message_correct[1]);
-
-       // enter_report_to_table();
+        int length = length_massege(message_correct[1]);
+        // מכניס את תוכן ופרטי ההודעה
+        Agent agent = new Agent();
+        string[] name_pass = agent.enter_password_and_name();
+        string nameAegnt = name_pass[0];
+        dal.enter_report_to_table(message_correct[1], length, message_correct[0], name_pass[0]);
     }
     internal string enter_reports()
     {

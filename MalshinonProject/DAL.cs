@@ -15,19 +15,22 @@ internal class Dal
     internal bool chack_code_agent()
     {
         Agent s = new Agent();
-        string code = s.enter_password();
+        string[] name_code = s.enter_password_and_name();
+        string name = name_code[0];
+        string code = name_code[1];
         bool my_bool = false;
         try
         {
             conn.Open();
-            string query = "SELECT `secretCode` FROM `reporters`;";
+            string query = "SELECT `secretCode`,`reporterName` FROM `reporters`;";
             MySqlCommand cmd = new MySqlCommand(query, conn);
 
             var reader = cmd.ExecuteReader();
             while (reader.Read())
             {
                 string secretCode = reader.GetString("secretCode");
-                if (secretCode == code) { my_bool = true; }
+                string reporterName = reader.GetString("reporterName");
+                if (secretCode == code && reporterName == name ) { my_bool = true; }
 
             }
         }
@@ -43,13 +46,9 @@ internal class Dal
     }
     //--------------------------------------------------------
     // הפונקציה יוצרת משתמש חדש
-    internal void create_agent()
+    internal void create_agent(string fullName, string password)
     {
-        Console.WriteLine("plise enter your name ");
-        // צריך לבדוק את הקלט
-        string fullName = Console.ReadLine();
-        Console.WriteLine("plise enter new password ");
-        string password = Console.ReadLine();
+        
 
         try
         {
@@ -132,9 +131,35 @@ internal class Dal
         }
     }
 
-// ---------------------------------------------------------------------
-    
+    // ---------------------------------------------------------------------
 
+    // פונקציה המכניסה הודעה לטבלה ומעדכנת את שאר הטבלאות
+
+    internal void enter_report_to_table(string reportText, int length,string reporterName, string terroristName)
+    {
+
+        try
+        {
+            conn.Open();
+            string query = @"INSERT INTO intelligence(`reportText`,`textLength`,`reporterName`,`terroristName`) VALUES(@reportText,@textLength,@reporterName,@terroristName);\r\n";
+            MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@reportText", reportText);
+            cmd.Parameters.AddWithValue("@textLength", length);
+            cmd.Parameters.AddWithValue("@reporterName", reporterName);
+            cmd.Parameters.AddWithValue("@terroristName", terroristName);
+            cmd.ExecuteNonQuery();
+
+            Console.WriteLine("added user");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"err: {ex}");
+        }
+        finally
+        {
+            conn.Close();
+        }
+    }
 
 
 }

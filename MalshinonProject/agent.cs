@@ -2,12 +2,17 @@
 
 internal class Agent
 {
-    internal string enter_password()
+    // מכניס שם וסיסמה של משתמש
+    internal string[] enter_password_and_name()
     {
+        
+        Console.WriteLine("please enter your name ");
+        string name = Console.ReadLine();
         Console.WriteLine("please enter your password ");
         string password = Console.ReadLine();
+        string[] name_and_password = { name, password };
 
-        return password;
+        return name_and_password;
     }
 
     internal void check_user()
@@ -25,10 +30,25 @@ internal class Agent
 
     }
 
-    internal static void create_user()
+    //---------------------------------------
+    // מחזיר שם וסיסמה חדשים של משתמש
+    internal string[] enter_new_name_and_password()
     {
+        Console.WriteLine("plise enter your name ");
+        // צריך לבדוק את הקלט
+        string fullName = Console.ReadLine();
+        Console.WriteLine("plise enter new password ");
+        string password = Console.ReadLine();
+        string[] new_name_and_pass = {fullName,password };
+
+        return new_name_and_pass;
+    }
+
+    internal  void create_user()
+    {
+        string[] new_name_pass = enter_new_name_and_password();
         Dal user = new Dal();
-        user.create_agent();
+        user.create_agent(new_name_pass[0], new_name_pass[1]);
     }
 
     internal  void type_agent() { }
